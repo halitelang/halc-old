@@ -9,7 +9,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "generate:parser": "pegjs --cache --optimize size --output src/parser/parser.ts src/parser/grammar.pegjs"
+    "generate:parser": "pegjs --cache --optimize size --output src/parser/parser.js src/parser/grammar.pegjs"
   },
   "dependencies": {
     "ast-types": "^0.14.2",

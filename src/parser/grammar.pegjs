@@ -2,10 +2,13 @@ start
   = statement*
 
 statement
-  = functionDefinition / functionCall / prototypeDefinition / prototypeInheritance / methodCall / defaultArgValues / stringInterpolation / objectCreation / propertyAccess / fiberDefinition / fiberBody / awaitKeyword / creatingFiberInstance / resumingFiber / importing / exporting / moduleResolution
+  = functionDefinition / functionCall / prototypeDefinition / prototypeInheritance / chainExpression / defaultArgValues / stringInterpolation / objectCreation / fiberDefinition / fiberBody / awaitExpression / creatingFiberInstance / importing / exporting
 
 functionDefinition
-  = "func" identifier "(" argsList? ")" "{" statement* "}"
+  = "func" identifier typeDeclaration? "(" argsList? ")" "{" statement* "}"
+
+typeDeclaration
+  = ":" type
 
 functionCall
   = identifier "(" namedArgList? ")"
@@ -16,35 +19,41 @@ prototypeDefinition
 prototypeInheritance
   = identifier "extends" identifier "{" prototypeBody* "}"
 
-methodCall
-  = expression "." identifier "(" namedArgList? ")"
+chainExpression
+  = baseExpression chainTail*
+
+chainTail
+  = "." (identifier "(" namedArgList? ")" / identifier / "resume" "(" ")")
 
 defaultArgValues
-  = identifier ":" type "=" expression
+  = identifier typeDeclaration? ":=" expression
 
-// stringInterpolation
-//   = "$\"" (char / "{" expression "})* "\""
+stringInterpolation
+  = "$\"" sequence* "\""
+  
+sequence
+  = char / interpolation
+
+interpolation
+  = "{" expression "}"
+
+char
+  = [^\{\}]+  // any character except { or }
 
 objectCreation
   = "new" identifier
 
-propertyAccess
-  = expression "." identifier
-
 fiberDefinition
-  = "fiber" identifier "(" argsList? ")" "{" statement* "}"
+  = "fiber" identifier typeDeclaration? "(" argsList? ")" "{" statement* "}"
 
 fiberBody
   = "{" statement* "}"
 
-awaitKeyword
+awaitExpression
   = "await" expression
 
 creatingFiberInstance
   = identifier "=" identifier "(" expression? ")"
-
-resumingFiber
-  = expression "." "resume" "(" ")"
 
 importing
   = "import" (identifier / "{" identifierList "}" "from" identifier)
@@ -52,26 +61,29 @@ importing
 exporting
   = "export" (functionDefinition / identifierList) / "export default" functionDefinition
 
-moduleResolution
-  = // Module resolution will require additional context or external mechanisms and may not be expressible solely within the grammar.
+identifier
+  = [a-zA-Z_] [a-zA-Z_0-9]*
 
-// identifier
-//   = [a-zA-Z_] [a-zA-Z_0-9]*
+identifierList
+  = identifier ("," identifier)*
 
-// identifierList
-// = identifier ("," identifier)*
+argsList
+  = identifier typeDeclaration? ("," identifier typeDeclaration?)*
 
-// argsList
-//   = identifier ":" type ("," identifier ":" type)*
+namedArgList
+  = identifier ":" expression ("," identifier ":" expression)*
 
-// namedArgList
-//   = identifier ":" expression ("," identifier ":" expression)*
+prototypeBody
+  = varDeclaration / functionDefinition
 
-// prototypeBody
-//   = varDeclaration / functionDefinition
+varDeclaration
+  = "var" identifier typeDeclaration
 
-// varDeclaration
-//   = "var" identifier ":" type
+type
+  = identifier
 
-// type
-//   = identifier
+baseExpression
+  = functionCall / identifier / stringInterpolation / objectCreation / awaitExpression / creatingFiberInstance / importing / exporting
+
+expression
+  = chainExpression
