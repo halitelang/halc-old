@@ -9,7 +9,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "generate:parser": "pegjs --cache --optimize size src/parser/grammar.pegjs && cjs-to-es6 src/parser/parser.js",
+    "generate:parser": "pegjs --cache --optimize size --output src/parser/parser.js src/parser/grammar.pegjs && cjs-to-es6 src/parser/parser.js",
     "compile": "bun run ./src/index.ts"
   },
   "dependencies": {
