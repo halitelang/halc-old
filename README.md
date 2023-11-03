@@ -1,3 +1,5 @@
+# **THIS REPO IS DEPRECATED, WE ARE REWRITING HALC IN GO!!!!**
+
 # halc
 
 To install dependencies:
